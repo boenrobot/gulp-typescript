@@ -32,4 +32,5 @@ export declare function setupProject(projectDirectory: string, configFileName: s
 export interface ICompileStream extends NodeJS.ReadWriteStream {
     js: stream.Readable;
     dts: stream.Readable;
+    buildInfo: stream.Readable;
 }

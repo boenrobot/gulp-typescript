@@ -36,7 +36,7 @@ function setupProject(projectDirectory, configFileName, rawConfig, config, optio
         input.reset();
         compiler.prepare(projectInfo, finalTransformers);
         const stream = new CompileStream(projectInfo);
-        projectInfo.output = new output_1.Output(projectInfo, stream, stream.js, stream.dts);
+        projectInfo.output = new output_1.Output(projectInfo, stream, stream.js, stream.dts, stream.buildInfo);
         projectInfo.reporter = reporter || reporter_1.defaultReporter();
         stream.on('finish', () => {
             running = false;
@@ -91,6 +91,7 @@ class CompileStream extends stream.Duplex {
         super({ objectMode: true });
         this.js = new CompileOutputStream();
         this.dts = new CompileOutputStream();
+        this.buildInfo = new CompileOutputStream();
         this.project = project;
     }
     _write(file, encoding, cb = (err) => { }) {

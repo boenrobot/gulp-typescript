@@ -14,13 +14,14 @@ const VinylFile = require("vinyl");
 const utils = require("./utils");
 const reporter = require("./reporter");
 class Output {
-    constructor(_project, streamFull, streamJs, streamDts) {
+    constructor(_project, streamFull, streamJs, streamDts, streamBuildInfo) {
         // Number of pending IO operatrions
         this.pendingIO = 0;
         this.project = _project;
         this.streamFull = streamFull;
         this.streamJs = streamJs;
         this.streamDts = streamDts;
+        this.streamBuildInfo = streamBuildInfo;
     }
     writeJs(base, fileName, content, sourceMapContent, cwd, original) {
         this.pipeRejection(this.writeJsAsync(base, fileName, content, sourceMapContent, cwd, original), this.streamJs);
@@ -65,6 +66,16 @@ class Output {
                 this.mightFinish();
             });
         });
+    }
+    writeBuildInfo(base, fileName, content, cwd) {
+        const file = new VinylFile({
+            path: fileName,
+            contents: Buffer.from(content),
+            cwd,
+            base
+        });
+        this.streamFull.push(file);
+        this.streamBuildInfo.push(file);
     }
     applySourceMap(sourceMapContent, original, output) {
         return __awaiter(this, void 0, void 0, function* () {

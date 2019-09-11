@@ -113,6 +113,10 @@ class ProjectCompiler {
             case 'map':
                 file.jsMapContent = content;
                 break;
+            case 'tsbuildinfo':
+                file.buildinfoFileName = fileName;
+                file.buildinfoContent = content;
+                break;
         }
     }
     emit(result, preEmitDiagnostics, callback) {
@@ -129,7 +133,7 @@ class ProjectCompiler {
             this.project.output.diagnostic(error);
         }
     }
-    emitFile({ file, jsFileName, dtsFileName, dtsMapFileName, jsContent, dtsContent, dtsMapContent, jsMapContent }, currentDirectory) {
+    emitFile({ file, jsFileName, dtsFileName, dtsMapFileName, jsContent, dtsContent, dtsMapContent, jsMapContent, buildinfoFileName, buildinfoContent }, currentDirectory) {
         if (!jsFileName)
             return;
         let base;
@@ -169,6 +173,9 @@ class ProjectCompiler {
                 dtsContent = this.removeSourceMapComment(dtsContent);
             }
             this.project.output.writeDts(baseDeclarations, dtsFileName, dtsContent, dtsMapContent, file ? file.gulp.cwd : currentDirectory, file);
+        }
+        if (buildinfoContent !== undefined) {
+            this.project.output.writeBuildInfo(base, buildinfoFileName, buildinfoContent, file ? file.gulp.cwd : currentDirectory);
         }
     }
     removeSourceMapComment(content) {
